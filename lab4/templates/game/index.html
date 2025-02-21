@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<!-- Стародубцев Андрей, гр. 44-24-208 -->
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра "5x5"</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14pt;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            height: 100vh;
+            background-color: #e9ebee;
+        }
+
+        .container {
+            background-color: #fff;
+            text-align: center;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+        }
+
+        select, button {
+            padding: 5px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button {
+            width: 50%;
+        }
+        select:hover {
+            border: 1px solid blue;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+        td {
+            width: 80px;
+            height: 80px;
+            border: 2px solid;
+            overflow: hidden;
+            cursor: pointer;
+            transition: background-color 0.25s ease;
+        }
+        td:hover {
+            background-color:rgb(235, 235, 235);
+        }
+        .white {
+            background-color: white;
+        }
+
+        .nameField {
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Игра "5x5"</h2>
+        <div class="line">
+            <label>Ваше имя</label>
+            <input type="text" id="playerName" class="nameField" placeholder="Введите ваше имя">
+        </div>
+        <div class="line">
+            <label>Режим игры</label>
+            <select name="gameMode" id="gameMode">
+                <option value="color">Цвета</option>
+                <option value="image">Картинки</option>
+            </select>
+        </div>
+        <button onclick="reset()">Начать заново</button>
+        <table>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+        <div>Количество ходов: <b><span id="counter">0</span></b></div>
+    </div>
+
+    <script>
+        function changeCell(e) { 
+            if (e.target.tagName !== "TD") return // Клик в промежутке между ячейками
+
+            setCount(count + 1)
+            if (name.value.trim() === "") name.style.border = "2px red solid" // Напоминание, что игрок не ввёл имя
+            if (gameMode.value == "color") {
+                var randIndex = Math.floor(Math.random() * colors.length)
+                var randCol = colors[randIndex]
+                e.target.style.backgroundColor = randCol
+            }
+            else if (gameMode.value == "image") {
+                var randIndex = Math.floor(Math.random() * images.length)
+                e.target.style.backgroundColor = "#bbb"; // Индикация, что картинка загружается
+                e.target.style.backgroundImage = `url(${images[randIndex]})`
+                e.target.style.backgroundSize = "cover" // Заполняем ячейку изображением
+            }
+            if (calc() == 25) {
+                setTimeout(() => endGame(), 100)
+            }
+        }
+
+        function calc() {
+            var k = 0
+            cells.forEach(cell => {
+                if (cell.style.backgroundColor || cell.style.backgroundImage) k++
+            })
+            return k
+        }
+
+        function reset() {
+            cells.forEach(cell => { 
+                cell.style.backgroundColor = ''
+                cell.style.backgroundImage = ''
+            })
+            setCount(0)
+        }
+
+        function setCount(n) {
+            count = n
+            counter.textContent = n
+        }
+
+        function endGame() {
+            // Подсчёт очков
+            var score = 0
+            for (row = 0; row < 5; row++) {
+                for (col = 0; col < 5; col++) {
+                    if (gameMode.value == "color") {
+                        if (col < 3 && 
+                          (rows[row].children[col].style.backgroundColor === rows[row].children[col + 1].style.backgroundColor &&
+                          rows[row].children[col + 1].style.backgroundColor === rows[row].children[col + 2].style.backgroundColor))
+                            score++
+                        if (row < 3 && 
+                          (rows[row].children[col].style.backgroundColor === rows[row + 1].children[col].style.backgroundColor &&
+                          rows[row + 1].children[col].style.backgroundColor === rows[row + 2].children[col].style.backgroundColor))
+                            score++
+                    }
+                    else if (gameMode.value == "image") {
+                        if (col < 3 && 
+                          (rows[row].children[col].style.backgroundImage === rows[row].children[col + 1].style.backgroundImage &&
+                          rows[row].children[col + 1].style.backgroundImage === rows[row].children[col + 2].style.backgroundImage))
+                            score++
+                        if (row < 3 && 
+                          (rows[row].children[col].style.backgroundImage === rows[row + 1].children[col].style.backgroundImage &&
+                          rows[row + 1].children[col].style.backgroundImage === rows[row + 2].children[col].style.backgroundImage))
+                            score++
+                    }
+                }
+            }
+
+            var playerName = ""
+            if (name.value.trim() !== "") playerName = ", " + name.value
+            alert(`Игра окончена${playerName}! Ваш счёт: ${score}, количество ходов: ${count}`)
+            reset()
+        }
+
+        const colors = ['red', 'green', 'blue', 'yellow', 'aqua', 'orange', 'purple']
+        const imgBase = "https://loremflickr.com/100/100/"
+        const images = [imgBase + 'sea', imgBase + 'sport', imgBase + 'human', imgBase + 'music']
+        const table = document.querySelector("table")
+        const rows = document.querySelectorAll("tr")
+        const cells = document.querySelectorAll("td")
+        const name = document.getElementById("playerName")
+        const gameMode = document.getElementById("gameMode")
+        const counter = document.getElementById("counter")
+
+        colors.forEach(col => {
+            const style = document.createElement("style")
+            style.innerHTML = `.${col} {
+                background-color: ${col};
+            }`
+            document.head.appendChild(style)
+        })
+
+        var count = 0
+        table.addEventListener("click", e => changeCell(e))
+        gameMode.addEventListener("change", reset)
+        name.addEventListener("input", function() {
+            if (this.value.trim() === '')
+                this.style.border = "2px red solid"
+            else this.style.border = ""
+        })
+    </script>
+</body>
+</html>

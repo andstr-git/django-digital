@@ -1,7 +1,7 @@
 def convert(v, b1=10, b2=16):
     try:
         num = int(v, b1)
-    except:
+    except ValueError:
         return "Неверное число"
     digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     if num == 0:
@@ -45,32 +45,32 @@ def decrypt(strs):
             if length == 1 or i == len(book_words)-1 or len(book_w) != len(book_words[i+1]):
                 answer += book_w + "<br>" # <br> - переход на новую строку в HTML
                 break
-            else:
-                if diffs == []:
-                    diffs = calc_diffs(word)
-                if diffs == book_diffs[i]: # если списки разниц слов совпадают - зашифрованное слово найдено
-                    answer += book_w + "<br>"
-                    break
+
+            if diffs == []:
+                diffs = calc_diffs(word)
+            if diffs == book_diffs[i]: # если списки разниц слов совпадают - зашифрованное слово найдено
+                answer += book_w + "<br>"
+                break
     return answer
 
 
 from django.shortcuts import render, HttpResponse
 
-def mainPage(request):
+def mainPage(_request):
     return HttpResponse('<h1>Стародубцев Андрей Александрович, гр. 44-24-208, Практическая работа №4</h1><h2><a href="/game/">Игра "5x5"</a></h2><h3>Калькулятор из десятичного числа в шестнадцатиричную: <a href="/calc/55">/calc/[десятичное_число]</a></h3><h3>Решение <a href="https://coderun.yandex.ru/selections/backend/problems/decrypt-message">олимпиадной задачи</a>: <a href="/task/a%20abb%20bab%20abc%7C6%7Cq%7Cbcc%7Caza%7Cabc%7Cz%7Cdef">/task/[входные_строки,разделённые_знаком"|"]</a></h3>')
 
 def gameFunc(request):
     return render(request, "game/index.html")
 
-def calc(request, val):
+def calc(_request, val):
     return HttpResponse(convert(val))
 
-def solveTask(request, val):
+def solveTask(_request, val):
     strings = list(val.split("|"))
     # print("INPUT", strings)
     return HttpResponse(decrypt(strings))
 
-def customNotFoundHandler(request, exception):
+def customNotFoundHandler(_request, _exception):
     return HttpResponse('<h1>Что-то пошло не так...</h1>')
 
 # Задача https://coderun.yandex.ru/selections/backend/problems/decrypt-message

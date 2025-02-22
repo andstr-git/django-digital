@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from lab4.views import *
+from lab4.views import mainPage, gameFunc, calc, solveTask, customNotFoundHandler
 
 handler404 = customNotFoundHandler # кастомный обработчик неподдерживаемого маршрута (работает только в режиме Production)
 urlpatterns = [
